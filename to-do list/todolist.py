@@ -7,14 +7,21 @@ if not os.path.exists("Tasks.txt"):
         file.write("")
 
 def addtask():
-    value = EnterText.get()
-    if value != '':
+    value = EnterText.get().lower()
+    d = {}
+    with open('Tasks.txt', 'r') as file:
+        for line in file:
+            line = line.strip()
+            if line:
+                key, val = line.split(':')
+                d[key] = val
+    if value != '' and value not in d:
         with open('Tasks.txt', 'a+', encoding='utf-8') as file:
             file.write(f"{value}:not finished\n")
-        EnterText.delete(0, 'end')
         tk.messagebox.showinfo("Task added!", ('Task added successfully!'))
     else:
-        tk.messagebox.showinfo("Error", ('Task field empty.'))
+        tk.messagebox.showinfo("Error", ('Task field empty or item already exists.'))
+    EnterText.delete(0, 'end')
 
 def showtasks():
     with open('Tasks.txt', 'r+') as file:
@@ -26,7 +33,7 @@ def cleartasks():
     tk.messagebox.showinfo("To-do list cleared!", ('Your to-do list is now clear'))
 
 def finishtask():
-    value = EnterText.get()
+    value = EnterText.get().lower()
     d = {}
     with open('Tasks.txt', 'r') as file:
         for line in file:
@@ -36,11 +43,13 @@ def finishtask():
                 d[key] = val
     if value in d:
         d[value] = 'finished'
+        tk.messagebox.showinfo("Task finished!", ('Task finished successfully!'))
+    else:
+        tk.messagebox.showinfo("Error", ('No such task has been found!'))
     with open('Tasks.txt', 'w') as file:
         for key, val in d.items():
             file.write(f"{key}:{val}\n")
     EnterText.delete(0, 'end')
-    tk.messagebox.showinfo("Task finished!", ('Task finished successfully!'))
 
 def UpClick(i):
     showtasks()
